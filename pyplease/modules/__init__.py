@@ -75,7 +75,7 @@ class Module(object):
         print
         print self.__doc__ or 'The author of this module did not write a docstring'
         print
-        print 'Avaiable actions:'
+        print 'Available actions:'
         print
 
         for action in self.avaiable_actions():
