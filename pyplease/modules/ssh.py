@@ -27,6 +27,26 @@ class Module(modules.Module):
             self.failure('Exit code: %s' % p)
 
 
+    @modules.action
+    def authorize(self, args):
+        """allows login with a key (adds it to authorized_keys)"""
+        self.prepare_folder()
+
+        if args:
+            key = args[0]
+            self.extra_params(args[1:])
+        else:
+            key = self.ask('Public key?')
+
+        path = self.normalize_path('~/.ssh/authorized_keys')
+
+        if os.path.exists(path) and self.has_line(path, key):
+            return self.failure('Already in authorized')
+
+        self.append(path, '%s\n' % key.strip())
+
+        return self.success('Now try login here using a private key from the pair')
+
 
 
     def prepare_folder(self):
