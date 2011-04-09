@@ -71,6 +71,31 @@ class Module(modules.Module):
                 self.register(module_name, path)
                 self.success('Registered "%s"' % module_name)
 
+    @modules.action('', 'enables autocompetion (if you have bash-autocomplete)')
+    def autocomplete(self, values):
+        cmd = """complete -C 'please --complete "$COMP_LINE"' please || true"""
+
+        bashrc = self.ask('Path to the bashrc file?', '~/.bashrc')
+
+        bashrc = os.path.abspath(os.path.expanduser(bashrc))
+
+        self.note('Using "%s" as bashrc' % bashrc)
+        
+        if any(l == cmd for l in open(bashrc)):
+            self.failure('Autocomplete seems already enabled')
+            return
+        
+        self.backup(bashrc)
+
+        f = open(bashrc, 'a')
+        f.write('\n')
+        f.write(cmd)
+        f.write('\n')
+        f.close()
+
+        self.success('Autocomplete enabled!')
+        
+
     def register(self, module_name, path):
         config = self.get_config()
         

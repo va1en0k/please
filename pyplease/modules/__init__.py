@@ -75,6 +75,13 @@ class Module(object):
             except AttributeError:
                 pass
 
+    def completion(self, prefix, argv):
+        if len(argv) == 0 or (len(argv) == 1 and prefix):
+            for name, args, description in self.avaiable_actions():
+                if name.startswith(prefix):
+                    print name
+            
+
     # User interaction
     def ask(self, text, default=None, variants=None, tries=3):
         prompt = text

@@ -3,6 +3,7 @@
 please [module] [action...]"""
 
 import sys
+import shlex
 
 from pyplease.modules import get_module, get_module_list
 
@@ -15,6 +16,27 @@ def print_help():
     for m in get_module_list():
         print '    ', m
 
+def completion(argv):
+#    if not argv:
+    line, cmd, prefix, last_word = argv
+
+    t_argv = shlex.split(line)
+    
+    if len(t_argv) == 1 or (len(t_argv) == 2 and prefix):
+        # module
+    
+        for m in get_module_list():
+            if m.startswith(prefix):
+                print m
+
+
+    else:
+        try:
+            m = get_module(t_argv[1])
+            m.completion(prefix, t_argv[2:])
+        except:
+            pass
+        
     
 def main(argv=None):
     argv = argv or sys.argv
@@ -23,15 +45,19 @@ def main(argv=None):
         print_help()
 
         return
+
+    if argv[1] == '--complete':
+        completion(argv[2:])
+        return
     
-    vocative = sys.argv[1]
-    action = sys.argv[2:]
+    vocative = argv[1]
+    action = argv[2:]
 
     try:
         action_module = get_module(vocative)
         action_module.act(action)
     except:
-        print >>sys.stderr, "[:-(] Please run with as few as possible arguments to see help"
+        print >>sys.stderr, "\n\n[:-(] Please run with as few as possible arguments to see help"
         raise
 
 if __name__ == '__main__':
