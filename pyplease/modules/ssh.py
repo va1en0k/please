@@ -36,7 +36,7 @@ class Module(modules.Module):
             key = args[0]
             self.extra_params(args[1:])
         else:
-            key = self.ask('Public key?')
+            key = self.ask('Public key?', validate=self.validate_not_blank)
 
         path = self.normalize_path('~/.ssh/authorized_keys')
 

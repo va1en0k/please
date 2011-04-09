@@ -45,6 +45,14 @@ def action(args='', description=None):
     
     return _decorator
 
+def validator(message):
+    def _decorator(func):
+        func.error_message = message
+        return func
+    
+    return _decorator
+
+
 class Module(object):    
     # External API
     def __init__(self, module_name):
@@ -99,15 +107,13 @@ class Module(object):
             
 
     # User interaction
-    def ask(self, text, default=None, variants=None, tries=3):
+    def ask(self, text, default=None, variants=None, validate=None, tries=3):
         prompt = text
-        
-        validate = None
         
         if variants:
             prompt += ' (%s)' % ('/'.join(variants))
                 
-            validate = lambda v: v.lower() in variants
+            validate = self.validate_variants(variants)
                 
                 
         if default:
@@ -117,15 +123,19 @@ class Module(object):
             
         value = raw_input(prompt)
 
-        if not value:
+        if not value and default:
             return default
 
         if validate and not validate(value):
-            self.warn('Invalid value. Please select one of: %s'
-                      % ', '.join(variants))
+
+            self.warn(validate.error_message)
             
             if tries > 1:
-                return self.ask(text, variants, default, tries=tries - 1)
+                return self.ask(text=text,
+                                variants=variants,
+                                default=default,
+                                validate=validate,
+                                tries=tries - 1)
                 
             raise ValueError('Invalid input!')
         
@@ -133,7 +143,20 @@ class Module(object):
 
     def confirm(self, text):
         return 'y' == self.ask(text, variants=('y', 'n'), default='y')
+
+    # Validators
+    @validator('Please enter a value')
+    def validate_not_blank(self, value):
+        return bool(value)
+
+    def validate_variants(self, variants):
+        variants = ', '.join(variants)
         
+        @validator('Invalid value. Please select one of: %s' % variants)
+        def _validator(value):
+            return value.lower() in variants
+            
+        return _validator
     
     # Output
     def success(self, value):
