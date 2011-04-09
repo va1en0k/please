@@ -1,0 +1,5 @@
+#!/usr/bin/python
+
+from pyplease import main
+
+main()
