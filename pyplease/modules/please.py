@@ -99,7 +99,7 @@ class Module(modules.Module):
             
             self.append(bashrc, "\n%s\n\n" % cmd)
 
-            self.success('Autocomplete enabled!')
+            self.success('Autocomplete enabled! Please re-login or use `source ~/.bashrc`')
 
             return
 
