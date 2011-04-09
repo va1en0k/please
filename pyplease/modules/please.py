@@ -22,11 +22,7 @@ class Module(modules.Module):
 
         path = self.ask('Path to the module?', path)
 
-        self.backup(self.config_path)
-
-        config.set('modules', module_name, path)
-
-        config.write(open(self.config_path, 'wb'))
+        self.register(module_name, path)
 
         self.success('Registered "%s" as "%s"' % (module_name, path))
 
@@ -51,6 +47,43 @@ class Module(modules.Module):
 
         self.success('Removed "%s" from "%s"' % (module_name, path))
 
+    @modules.action('[-a]',
+                    'registers default modules (-a to register all without asking)')
+    def defaults(self, values):
+        install_all = False
+        
+        if values and values[0] == '-a':
+            values = values[1:]
+            install_all = True
+
+        self.extra_params(values)
+
+        if install_all:
+            self.warn('Going to register *all* default modules '
+                      'without asking for your permission!')
+
+        self.get_config() # before everything
+
+        for module_name, path in modules.DEFAULTS:
+            install = install_all or self.confirm('Install "%s"?' % module_name)
+
+            if install:
+                self.register(module_name, path)
+                self.success('Registered "%s"' % module_name)
+
+    def register(self, module_name, path):
+        config = self.get_config()
+        
+        self.backup(self.config_path)
+
+        if not config.has_section('modules'):
+            config.add_section('modules')
+
+        config.set('modules', module_name, path)
+
+        config.write(open(self.config_path, 'wb'))
+        
+                
     def get_module_name(self, values):
         if values:
             return values[0]

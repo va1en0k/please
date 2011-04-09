@@ -1,11 +1,19 @@
 import sys
 import shutil
+import os
 
 import pyplease
 
 from pyplease.config import CONFIG
 
-MODULES = dict(CONFIG.items('modules'))
+DEFAULTS = [('git', 'pyplease.modules.git')]
+
+try:
+    MODULES = dict(CONFIG.items('modules'))
+except:
+    MODULES = dict()
+    
+MODULES['please'] = 'pyplease.modules.please' # always!
 
 def get_module(name):
     module = MODULES[name]
@@ -68,19 +76,42 @@ class Module(object):
                 pass
 
     # User interaction
-    def ask(self, text, default=None):
+    def ask(self, text, default=None, variants=None, tries=3):
+        prompt = text
+        
+        validate = None
+        
+        if variants:
+            prompt += ' (%s)' % ('/'.join(variants))
+                
+            validate = lambda v: v.lower() in variants
+                
+                
         if default:
-            text += ' [%s]' % default
+            prompt += ' [%s]' % default
 
-        text = '[???] %s ' % text
+        prompt = '[???] %s ' % prompt
             
-        value = raw_input(text)
+        value = raw_input(prompt)
 
         if not value:
             return default
 
+        if not validate(value):
+            self.warn('Invalid value. Please select one of: %s'
+                      % ', '.join(variants))
+            
+            if tries > 1:
+                return self.ask(text, variants, default, tries=tries - 1)
+                
+            raise ValueError('Invalid input!')
+        
         return value
 
+    def confirm(self, text):
+        return 'y' == self.ask(text, variants=('y', 'n'), default='y')
+        
+    
     # Output
     def success(self, value):
         print '[:-)]', value
@@ -100,6 +131,7 @@ class Module(object):
 
     # File API
     def backup(self, filename):
-        backup_filename = '%s~' % filename
+        if os.path.exists(filename):
+            backup_filename = '%s~' % filename
 
-        shutil.copyfile(filename, backup_filename)
+            shutil.copyfile(filename, backup_filename)
