@@ -15,9 +15,6 @@ setup(name='please',
 
       scripts=['pyplease/bin/please'],
 
-#      install_requires=[
-#        'django>=1.3'
-#        ],
       include_package_data=True,
 
       classifiers=[
