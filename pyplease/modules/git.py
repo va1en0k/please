@@ -31,8 +31,9 @@ class Module(modules.Module):
         
         self.email()
 
-    @modules.action('[username]', 'sets email')
+    @modules.action('[username]')
     def username(self, values=[]):
+        """sets username""" 
         current = self.query('user.name')
         
         username = (values and values[0]) or self.ask('Your username?', current)
@@ -43,8 +44,9 @@ class Module(modules.Module):
                      % self.query('user.name'))
 
         
-    @modules.action('[email]', 'sets email')
+    @modules.action('[email]')
     def email(self, values=[]):
+        """sets email"""
         current = self.query('user.email')
         
         username = (values and values[0]) or self.ask('Your email?', current)
