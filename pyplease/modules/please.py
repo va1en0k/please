@@ -77,7 +77,7 @@ class Module(modules.Module):
 
         bashrc = self.ask('Path to the bashrc file?', '~/.bashrc')
 
-        bashrc = os.path.abspath(os.path.expanduser(bashrc))
+        bashrc = self.normalize_path(bashrc)
 
         self.note('Using "%s" as bashrc' % bashrc)
 
@@ -91,17 +91,13 @@ class Module(modules.Module):
 
         if not disable:
         
-            if any(l.strip() == cmd for l in open(bashrc)):
+            if self.has_line(bashrc, cmd):
                 self.failure('Autocomplete seems already enabled')
                 return
         
             self.backup(bashrc)
             
-            f = open(bashrc, 'a')
-            f.write('\n')
-            f.write(cmd)
-            f.write('\n')
-            f.close()
+            self.append(bashrc, "\n%s\n\n" % cmd)
 
             self.success('Autocomplete enabled!')
 
@@ -157,7 +153,7 @@ class Module(modules.Module):
         
         path = self.ask('Path to the config?', '~/.pyplease')
 
-        path = os.path.abspath(os.path.expanduser(path))
+        path = self.normalize_path(path)
 
         self.note('Using "%s" as config' % path)
 

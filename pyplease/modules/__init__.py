@@ -162,3 +162,11 @@ class Module(object):
     def normalize_path(self, path):
         return os.path.abspath(os.path.expanduser(path))
 
+    def has_line(self, filename, line):
+        return any(l.strip() == line for l in open(filename))
+
+    def append(self, filename, text):
+        f = open(filename, 'a')
+        f.write(text)
+        f.close()
+
