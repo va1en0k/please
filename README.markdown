@@ -2,7 +2,7 @@
 
 ## What and why?
 
-I'm going to write a blog post about it. Please stay tuned at [[http://unfoldthat.com]]
+I'm going to write a blog post about it. Please stay tuned at <http://unfoldthat.com/>
 
 ## Install
 
@@ -26,7 +26,7 @@ Try `please [module_name]`, like `please ssh` or `please git`.
 
 Explore.
 
-# `configure`
+# configure
 
 I'm going to add action `configure` to as many modules as possible, it will interactively configure a program with several options I find useful and cool.
 
