@@ -18,13 +18,15 @@ You'll need to run `source ~/.bashrc` or restart bash session to enable autocomp
 
 Please use `please` as you please. With autocompletion it's simple.
 
-To get help:
+# Help
 
 Try `please`
 
 Try `please [module_name]`, like `please ssh` or `please git`.
 
 Explore.
+
+# `configure`
 
 I'm going to add action `configure` to as many modules as possible, it will interactively configure a program with several options I find useful and cool.
 
