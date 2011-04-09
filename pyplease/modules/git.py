@@ -34,7 +34,7 @@ class Module(modules.Module):
     def username(self, values=[]):
         current = self.query('user.name')
         
-        username = self.ask('Your username?', current)
+        username = (values and values[0]) or self.ask('Your username?', current)
         
         self.set('user.name', username)
         
@@ -46,7 +46,7 @@ class Module(modules.Module):
     def email(self, values=[]):
         current = self.query('user.email')
         
-        username = self.ask('Your email?', current)
+        username = (values and values[0]) or self.ask('Your email?', current)
         
         self.set('user.email', username)
         

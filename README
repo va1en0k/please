@@ -5,5 +5,4 @@ please [module] [action...]
 Avaiable modules list: 
 
      please
-     ssh
      git
