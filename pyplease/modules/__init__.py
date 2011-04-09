@@ -31,12 +31,17 @@ def get_module_list():
     return MODULES.keys()
         
 
-def action(args, description):
+def action(args='', description=None):
     def _decorator(func):
         func.action_name = func.func_name
         func.action_args = args
-        func.action_description = description
+        func.action_description = description or func.__doc__
         return func
+
+    if callable(args):
+        func = args
+        args = ''
+        return _decorator(func)
     
     return _decorator
 
@@ -75,7 +80,7 @@ class Module(object):
 
         for action in self.avaiable_actions():
             act = ' '.join(action[:2])
-            print '    {0:20s} - {1}'.format(act, action[2])
+            print '    {0:24s} - {1}'.format(act, action[2])
 
     def avaiable_actions(self):
         for method in dir(self):

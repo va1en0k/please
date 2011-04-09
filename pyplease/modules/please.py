@@ -118,7 +118,13 @@ class Module(modules.Module):
             f.close()
 
             self.success('Autocomplete disabled!')
-            
+
+    @modules.action
+    def configure(self, values):
+        """configures everything: default modules and autocompletion"""
+        
+        self.defaults([])
+        self.autocomplete([])
         
 
     def register(self, module_name, path):
