@@ -1,0 +1,3 @@
+include setup.py README LICENSE MANIFEST.in
+#include pyplease/bin/please
+global-exclude *~
