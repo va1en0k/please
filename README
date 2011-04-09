@@ -1,0 +1,8 @@
+Pyplease is a simple command-line configurator
+
+please [module] [action...]
+
+Avaiable modules list: 
+
+     please
+     ssh
