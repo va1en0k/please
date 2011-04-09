@@ -71,7 +71,7 @@ class Module(modules.Module):
                 self.register(module_name, path)
                 self.success('Registered "%s"' % module_name)
 
-    @modules.action('', 'enables autocompetion (if you have bash-autocomplete)')
+    @modules.action('[disable]', 'enables/disables autocompetion (if you have bash-autocomplete)')
     def autocomplete(self, values):
         cmd = """complete -C 'please --complete "$COMP_LINE"' please || true"""
 
@@ -80,20 +80,45 @@ class Module(modules.Module):
         bashrc = os.path.abspath(os.path.expanduser(bashrc))
 
         self.note('Using "%s" as bashrc' % bashrc)
+
+        disable = False
         
-        if any(l.strip() == cmd for l in open(bashrc)):
-            self.failure('Autocomplete seems already enabled')
+        if values and values[0] == 'disable':
+            values = values[1:]
+            disable = True
+
+        self.extra_params(values)
+
+        if not disable:
+        
+            if any(l.strip() == cmd for l in open(bashrc)):
+                self.failure('Autocomplete seems already enabled')
+                return
+        
+            self.backup(bashrc)
+            
+            f = open(bashrc, 'a')
+            f.write('\n')
+            f.write(cmd)
+            f.write('\n')
+            f.close()
+
+            self.success('Autocomplete enabled!')
+
             return
-        
-        self.backup(bashrc)
 
-        f = open(bashrc, 'a')
-        f.write('\n')
-        f.write(cmd)
-        f.write('\n')
-        f.close()
+        else:
+            self.backup(bashrc)
 
-        self.success('Autocomplete enabled!')
+            lines = [l for l in open(bashrc) if l.strip() != cmd]
+
+            f = open(bashrc, 'w')
+            for l in lines:
+                f.write(l)
+            f.close()
+
+            self.success('Autocomplete disabled!')
+            
         
 
     def register(self, module_name, path):
