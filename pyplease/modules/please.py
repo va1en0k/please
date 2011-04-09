@@ -5,29 +5,11 @@ from pyplease import modules
 
 
 class Module(modules.Module):
+    """Please configurator"""
 
-    def get_config(self):
-        try:
-            return self.config
-        except AttributeError:
-            pass
-
-        self.config = ConfigParser.ConfigParser()
-        
-        path = self.ask('Path to the config?', '~/.pyplease')
-
-        path = os.path.abspath(os.path.expanduser(path))
-
-        self.note('Using "%s" as config' % path)
-
-        self.config.read([path])
-        self.config_path = path
-
-        return self.config
-
-
-    def add_module(self, values):
-        module_name = values[0]
+    @modules.action('[module_name]', 'adds/edits a module for Please')
+    def add(self, values):
+        module_name = self.get_module_name(values)
         
         if values[1:]:
             self.extra_params(values[1:])
@@ -48,10 +30,51 @@ class Module(modules.Module):
         config.write(open(self.config_path, 'wb'))
 
         self.success('Registered "%s" as "%s"' % (module_name, path))
+
+    @modules.action('[module_name]', 'removes a module from Please')
+    def remove(self, values):
+        module_name = self.get_module_name(values)
+
+        if values[1:]:
+            self.extra_params(values[1:])
+
+        config = self.get_config()
+            
+        try:
+            path = config.get('modules', module_name)
+        except Exception:
+            self.failure("Can't find module '%s' in the config '%s'"
+                         % (module_name, self.config_path))
+            return
+
+        config.remove_option('modules', module_name)
+
+        config.write(open(self.config_path, 'wb'))
+
+        self.success('Removed "%s" from "%s"' % (module_name, path))
+
+    def get_module_name(self, values):
+        if values:
+            return values[0]
+        else:
+            return self.ask('Module name?')
+        
     
-    def add(self, values):
-        what = values[0]
+    def get_config(self):
+        try:
+            return self.config
+        except AttributeError:
+            pass
 
-        action = 'add_%s' % what
+        self.config = ConfigParser.ConfigParser()
+        
+        path = self.ask('Path to the config?', '~/.pyplease')
 
-        getattr(self, action)(values[1:])
+        path = os.path.abspath(os.path.expanduser(path))
+
+        self.note('Using "%s" as config' % path)
+
+        self.config.read([path])
+        self.config_path = path
+
+        return self.config
