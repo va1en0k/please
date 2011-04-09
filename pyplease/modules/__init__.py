@@ -95,7 +95,8 @@ class Module(object):
         print >>sys.stderr, '[:-(]', value
         
     def extra_params(self, values):
-        self.warn("I don't know what to do with '%s'" % ' '.join(values))
+        if values:
+            self.warn("I don't know what to do with '%s'" % ' '.join(values))
 
     # File API
     def backup(self, filename):

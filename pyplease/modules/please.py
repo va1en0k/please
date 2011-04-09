@@ -11,8 +11,7 @@ class Module(modules.Module):
     def add(self, values):
         module_name = self.get_module_name(values)
         
-        if values[1:]:
-            self.extra_params(values[1:])
+        self.extra_params(values[1:])
 
         config = self.get_config()
             
@@ -35,8 +34,7 @@ class Module(modules.Module):
     def remove(self, values):
         module_name = self.get_module_name(values)
 
-        if values[1:]:
-            self.extra_params(values[1:])
+        self.extra_params(values[1:])
 
         config = self.get_config()
             
