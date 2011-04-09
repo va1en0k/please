@@ -81,7 +81,7 @@ class Module(modules.Module):
 
         self.note('Using "%s" as bashrc' % bashrc)
         
-        if any(l == cmd for l in open(bashrc)):
+        if any(l.strip() == cmd for l in open(bashrc)):
             self.failure('Autocomplete seems already enabled')
             return
         

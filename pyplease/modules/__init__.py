@@ -52,7 +52,18 @@ class Module(object):
 
         act = values[0]
 
-        getattr(self, act)(values[1:])
+        try:
+            action = getattr(self, act)
+            
+            self.note('%s %s: %s'
+                      % (self.module_name,
+                         action.action_name,
+                         action.action_description))
+        except AttributeError:
+            self.failure('No such action: %s!' % act)
+
+            
+        action(values[1:])
 
     def default(self):
         print pyplease.__doc__.replace('[module]', self.module_name)
@@ -97,7 +108,7 @@ class Module(object):
         if default:
             prompt += ' [%s]' % default
 
-        prompt = '[???] %s ' % prompt
+        prompt = '\033[94m[???] %s \033[0m' % prompt
             
         value = raw_input(prompt)
 
@@ -121,7 +132,7 @@ class Module(object):
     
     # Output
     def success(self, value):
-        print '[:-)]', value
+        print '\033[92m[:-)]', value, '\033[0m'
 
     def failure(self, value):
         self.warn(value)
@@ -130,7 +141,7 @@ class Module(object):
         print '[:-|]', value
     
     def warn(self, value):
-        print >>sys.stderr, '[:-(]', value
+        print >>sys.stderr, '\033[93m[:-(]', value, '\033[0m'
         
     def extra_params(self, values):
         if values:
