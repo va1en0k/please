@@ -22,8 +22,9 @@ class Module(modules.Module):
     Configures git by using Git's command line API,
     not by raw config handling"""
 
-    @modules.action('', 'configures several important parameters')
+    @modules.action
     def configure(self, values):
+        """configures several important parameters"""
         self.extra_params(values)
 
         self.username()

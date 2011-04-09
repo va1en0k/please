@@ -120,7 +120,7 @@ class Module(object):
         if not value:
             return default
 
-        if not validate(value):
+        if validate and not validate(value):
             self.warn('Invalid value. Please select one of: %s'
                       % ', '.join(variants))
             
@@ -158,3 +158,7 @@ class Module(object):
             backup_filename = '%s~' % filename
 
             shutil.copyfile(filename, backup_filename)
+
+    def normalize_path(self, path):
+        return os.path.abspath(os.path.expanduser(path))
+
