@@ -27,8 +27,12 @@ def main(argv=None):
     vocative = sys.argv[1]
     action = sys.argv[2:]
 
-    action_module = get_module(vocative)
-    action_module.act(action)
+    try:
+        action_module = get_module(vocative)
+        action_module.act(action)
+    except:
+        print >>sys.stderr, "[:-(] Please run with as few as possible arguments to see help"
+        raise
 
 if __name__ == '__main__':
     main()
