@@ -6,7 +6,7 @@ import sys
 import shlex
 
 from pyplease.modules import get_module, get_module_list
-from pyplease.utils import normalize_path
+from pyplease.files import normalize_path
 
 HISTORY_FILE = normalize_path('~/.pleasehistory')
 
@@ -74,10 +74,12 @@ def main(argv=None):
         init_readline()
         
         action_module = get_module(vocative)
-        action_module.act(action)
+        code = action_module.act(action)
 
         end_readline()
-    except:
+        sys.exit(code)
+        
+    except Exception:
         print >>sys.stderr, "\n\n[:-(] Please run with as few as possible arguments to see help"
         raise
 

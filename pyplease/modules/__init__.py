@@ -85,9 +85,9 @@ class Module(InteractionMixin):
                          action.action_description))
         except AttributeError:
             self.failure('No such action: %s!' % act)
+            return
 
-            
-        action(values[1:])
+        return action()
 
     def default(self):
         print pyplease.__doc__.replace('[module]', self.module_name)
@@ -122,25 +122,4 @@ class Module(InteractionMixin):
     def extra_params(self, values):
         if values:
             self.warn("I don't know what to do with '%s'" % ' '.join(values))
-
-    # File API
-    def backup(self, filename):
-        if os.path.exists(filename):
-            backup_filename = '%s~' % filename
-
-            shutil.copyfile(filename, backup_filename)
-
-    def normalize_path(self, path):
-        # deprecateme
-        self.warn('Deprecation warning: please use pyplease.utils.normalize_path')
-        
-        return utils.normalize_path(path)
-
-    def has_line(self, filename, line):
-        return any(l.strip() == line for l in open(filename))
-
-    def append(self, filename, text):
-        f = open(filename, 'a')
-        f.write(text)
-        f.close()
 

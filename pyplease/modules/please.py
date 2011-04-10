@@ -1,14 +1,15 @@
 import os
 import ConfigParser
 
-from pyplease import modules
+from pyplease import modules, files
 
+AUTOCOMPLETE_CMD = """complete -C 'please --complete "$COMP_LINE"' please || true"""    
 
 class Module(modules.Module):
     """Please configurator"""
 
     @modules.action
-    def add(self, values):
+    def add(self):
         """adds/edits a module for Please"""
         
         config = self.get_config()
@@ -29,7 +30,7 @@ class Module(modules.Module):
         self.success('Registered "%s" as "%s"' % (module_name, path))
 
     @modules.action
-    def remove(self, values):
+    def remove(self):
         """removes a module from Please"""
         config = self.get_config()
         
@@ -50,9 +51,10 @@ class Module(modules.Module):
 
         self.success('Removed "%s" from "%s"' % (module_name, path))
 
-    @modules.action('[-a]',
-                    'registers default modules (-a to register all without asking)')
-    def defaults(self, values):
+    @modules.action
+    def defaults(self):
+        """registers default modules (-a to register all without asking)"""
+        
         install_all = False
         
         if values and values[0] == '-a':
@@ -74,56 +76,45 @@ class Module(modules.Module):
                 self.register(module_name, path)
                 self.success('Registered "%s"' % module_name)
 
-    @modules.action('[disable]', 'enables/disables autocompetion (if you have bash-autocomplete)')
-    def autocomplete(self, values):
-        cmd = """complete -C 'please --complete "$COMP_LINE"' please || true"""
-
-        bashrc = self.ask('Path to the bashrc file?', '~/.bashrc')
-
-        bashrc = self.normalize_path(bashrc)
+    @modules.action
+    def disable_autocomplete(self):
+        
+        bashrc = self.ask_path('Path to the bashrc file?', '~/.bashrc')
 
         self.note('Using "%s" as bashrc' % bashrc)
 
-        disable = False
+        files.backup(bashrc)
+        files.remove_lines(bashrc, AUTOCOMPLETE_CMD)
+
+        self.success('Autocomplete disabled!')
+
+
+
+    @modules.action
+    def autocomplete(self):
+        """enables autocompetion (if you have bash-autocomplete)"""
         
-        if values and values[0] == 'disable':
-            values = values[1:]
-            disable = True
+        bashrc = self.ask_path('Path to the bashrc file?', '~/.bashrc')
 
-        self.extra_params(values)
-
-        if not disable:
+        self.note('Using "%s" as bashrc' % bashrc)
         
-            if self.has_line(bashrc, cmd):
-                self.failure('Autocomplete seems already enabled')
-                return
+        if files.has_line(bashrc, AUTOCOMPLETE_CMD):
+            return self.failure('Autocomplete seems already enabled')
         
-            self.backup(bashrc)
-            
-            self.append(bashrc, "\n%s\n\n" % cmd)
+        files.backup(bashrc)
+        
+        files.append(bashrc, "\n%s\n\n" % AUTOCOMPLETE_CMD)
+        
+        return self.success('Autocomplete enabled! Please re-login or use `source ~/.bashrc`')
 
-            self.success('Autocomplete enabled! Please re-login or use `source ~/.bashrc`')
-
-            return
-
-        else:
-            self.backup(bashrc)
-
-            lines = [l for l in open(bashrc) if l.strip() != cmd]
-
-            f = open(bashrc, 'w')
-            for l in lines:
-                f.write(l)
-            f.close()
-
-            self.success('Autocomplete disabled!')
-
+        
+        
     @modules.action
     def configure(self, values):
         """configures everything: default modules and autocompletion"""
         
-        self.defaults([])
-        self.autocomplete([])
+        self.defaults()
+        self.autocomplete()
         
 
     def register(self, module_name, path):

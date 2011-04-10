@@ -3,7 +3,7 @@
 import sys
 
 from pyplease.colors import colored
-from pyplease import validators
+from pyplease import utils, files, validators
 
 
 MOODS = {'question': '???',
@@ -93,21 +93,31 @@ def note(text):
 def warn(text):
     print >>sys.stderr, output(text, 'warn')
 
+def ask_path(text, **kwargs):
+    path = ask(text, **kwargs)
+
+    return files.normalize_path(path)
+
 
 class InteractionMixin(object):
     # INPUT
     def ask(self, text, default=None, **kwargs):
-        return ask(text, default=default, **kwargs)    
-
+        return ask(text, default=default, **kwargs)
+    
+    def ask_path(self, text, default=None, **kwargs):
+        return ask_path(text, default=default)
+    
     def confirm(self, text):
         return confirm(text)
 
     # OUTPUT
     def success(self, value):
         success(value)
+        return 0
 
     def failure(self, value):
         failure(value)
+        return 1
 
     def note(self, value):
         note(value)
