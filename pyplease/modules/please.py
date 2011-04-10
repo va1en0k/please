@@ -23,6 +23,8 @@ class Module(modules.Module):
 
         path = self.ask('Python package?', path)
 
+        files.backup(self.config_path)
+        
         self.register(module_name, path)
 
         self.success('Registered "%s" as "%s"' % (module_name, path))
@@ -32,7 +34,7 @@ class Module(modules.Module):
         """removes a module from Please"""
         config = self.get_config()
         
-        module_name = self.ask(module_name)
+        module_name = self.ask('Module name?')
 
         try:
             path = config.get('modules', module_name)
