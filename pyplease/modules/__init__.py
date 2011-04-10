@@ -6,6 +6,7 @@ import subprocess
 import pyplease
 
 from pyplease.config import CONFIG
+from pyplease.interaction import InteractionMixin
 from pyplease import utils
 
 DEFAULTS = [('ssh', 'pyplease.modules.ssh'),
@@ -49,13 +50,6 @@ def action(args='', description=None):
     
     return _decorator
 
-def validator(message):
-    def _decorator(func):
-        func.error_message = message
-        return func
-    
-    return _decorator
-
 def check_output(args):
     try:
         # 2.7
@@ -70,7 +64,7 @@ def check_output(args):
     return ret.rstrip()
 
 
-class Module(object):    
+class Module(InteractionMixin):
     # External API
     def __init__(self, module_name):
         self.module_name = module_name
@@ -123,70 +117,7 @@ class Module(object):
                     print name
             
 
-    # User interaction
-    def ask(self, text, default=None, variants=None, validate=None, tries=3):
-        prompt = text
-        
-        if variants:
-            prompt += ' (%s)' % ('/'.join(variants))
-                
-            validate = self.validate_variants(variants)
-                
-                
-        if default:
-            prompt += ' [%s]' % default
-
-        prompt = '\033[94m[???] %s \033[0m' % prompt
-            
-        value = raw_input(prompt)
-
-        if not value and default:
-            return default
-
-        if validate and not validate(value):
-
-            self.warn(validate.error_message)
-            
-            if tries > 1:
-                return self.ask(text=text,
-                                variants=variants,
-                                default=default,
-                                validate=validate,
-                                tries=tries - 1)
-                
-            raise ValueError('Invalid input!')
-        
-        return value
-
-    def confirm(self, text):
-        return 'y' == self.ask(text, variants=('y', 'n'), default='y')
-
-    # Validators
-    @validator('Please enter a value')
-    def validate_not_blank(self, value):
-        return bool(value)
-
-    def validate_variants(self, variants):
-        variants = ', '.join(variants)
-        
-        @validator('Invalid value. Please select one of: %s' % variants)
-        def _validator(value):
-            return value.lower() in variants
-            
-        return _validator
-    
     # Output
-    def success(self, value):
-        print '\033[92m[:-)]', value, '\033[0m'
-
-    def failure(self, value):
-        self.warn(value)
-
-    def note(self, value):
-        print '[:-|]', value
-    
-    def warn(self, value):
-        print >>sys.stderr, '\033[93m[:-(]', value, '\033[0m'
         
     def extra_params(self, values):
         if values:
