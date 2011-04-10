@@ -7,8 +7,10 @@ from pyplease import modules
 class Module(modules.Module):
     """Please configurator"""
 
-    @modules.action('[module_name]', 'adds/edits a module for Please')
+    @modules.action
     def add(self, values):
+        """adds/edits a module for Please"""
+        
         config = self.get_config()
         
         module_name = self.get_module_name(values)
@@ -26,8 +28,9 @@ class Module(modules.Module):
 
         self.success('Registered "%s" as "%s"' % (module_name, path))
 
-    @modules.action('[module_name]', 'removes a module from Please')
+    @modules.action
     def remove(self, values):
+        """removes a module from Please"""
         config = self.get_config()
         
         module_name = self.get_module_name(values)

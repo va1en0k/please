@@ -96,7 +96,7 @@ def warn(text):
 
 class InteractionMixin(object):
     # INPUT
-    def ask(self, text, default, **kwargs):
+    def ask(self, text, default=None, **kwargs):
         return ask(text, default=default, **kwargs)    
 
     def confirm(self, text):
