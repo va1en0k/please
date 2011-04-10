@@ -6,6 +6,7 @@ import subprocess
 import pyplease
 
 from pyplease.config import CONFIG
+from pyplease import utils
 
 DEFAULTS = [('ssh', 'pyplease.modules.ssh'),
             ('git', 'pyplease.modules.git'),
@@ -199,7 +200,10 @@ class Module(object):
             shutil.copyfile(filename, backup_filename)
 
     def normalize_path(self, path):
-        return os.path.abspath(os.path.expanduser(path))
+        # deprecateme
+        self.warn('Deprecation warning: please use pyplease.utils.normalize_path')
+        
+        return utils.normalize_path(path)
 
     def has_line(self, filename, line):
         return any(l.strip() == line for l in open(filename))

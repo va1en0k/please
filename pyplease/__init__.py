@@ -6,6 +6,23 @@ import sys
 import shlex
 
 from pyplease.modules import get_module, get_module_list
+from pyplease.utils import normalize_path
+
+HISTORY_FILE = normalize_path('~/.pleasehistory')
+
+def init_readline():
+    try:
+        import readline
+        readline.read_history_file(HISTORY_FILE)
+    except:
+        pass
+
+def end_readline():
+    try:
+        import readline
+        readline.write_history_file(HISTORY_FILE)
+    except:
+        pass
 
 def print_help():
     print __doc__
@@ -54,8 +71,12 @@ def main(argv=None):
     action = argv[2:]
 
     try:
+        init_readline()
+        
         action_module = get_module(vocative)
         action_module.act(action)
+
+        end_readline()
     except:
         print >>sys.stderr, "\n\n[:-(] Please run with as few as possible arguments to see help"
         raise
