@@ -14,16 +14,14 @@ class Module(modules.Module):
         
         config = self.get_config()
         
-        module_name = self.get_module_name(values)
+        module_name = self.ask('Module name?')
         
-        self.extra_params(values[1:])
-            
         try:
             path = config.get('modules', module_name)
         except Exception:
             path = None
 
-        path = self.ask('Path to the module?', path)
+        path = self.ask('Python package?', path)
 
         self.register(module_name, path)
 
@@ -34,18 +32,17 @@ class Module(modules.Module):
         """removes a module from Please"""
         config = self.get_config()
         
-        module_name = self.get_module_name(values)
+        module_name = self.ask(module_name)
 
-        self.extra_params(values[1:])
-    
         try:
             path = config.get('modules', module_name)
         except Exception:
-            self.failure("Can't find module '%s' in the config '%s'"
-                         % (module_name, self.config_path))
-            return
+            return self.failure("Can't find module '%s' in the config '%s'"
+                                % (module_name, self.config_path))
 
         config.remove_option('modules', module_name)
+
+        files.backup(self.config_path)
 
         config.write(open(self.config_path, 'wb'))
 
@@ -53,24 +50,14 @@ class Module(modules.Module):
 
     @modules.action
     def defaults(self):
-        """registers default modules (-a to register all without asking)"""
+        """registers default modules"""
         
-        install_all = False
-        
-        if values and values[0] == '-a':
-            values = values[1:]
-            install_all = True
-
-        self.extra_params(values)
-
-        if install_all:
-            self.warn('Going to register *all* default modules '
-                      'without asking for your permission!')
-
         self.get_config() # before everything
-
+        
+        files.backup(self.config_path)
+        
         for module_name, path in modules.DEFAULTS:
-            install = install_all or self.confirm('Install "%s"?' % module_name)
+            install = self.confirm('Install "%s"?' % module_name)
 
             if install:
                 self.register(module_name, path)
@@ -120,22 +107,12 @@ class Module(modules.Module):
     def register(self, module_name, path):
         config = self.get_config()
         
-        self.backup(self.config_path)
-
         if not config.has_section('modules'):
             config.add_section('modules')
 
         config.set('modules', module_name, path)
 
         config.write(open(self.config_path, 'wb'))
-        
-                
-    def get_module_name(self, values):
-        if values:
-            return values[0]
-        else:
-            return self.ask('Module name?')
-        
     
     def get_config(self):
         try:
@@ -145,9 +122,7 @@ class Module(modules.Module):
 
         self.config = ConfigParser.ConfigParser()
         
-        path = self.ask('Path to the config?', '~/.pyplease')
-
-        path = self.normalize_path(path)
+        path = self.ask_path('Path to the config?', '~/.pyplease')
 
         self.note('Using "%s" as config' % path)
 
