@@ -29,8 +29,10 @@ def has_line(filename, fil):
     else:
         _f = line
         
+
+    f = open(normalize_path(filename))
+
     try:
-        f = open(normalize_path(filename))
         return any(_f(l) for l in f)
     finally:
         f.close()

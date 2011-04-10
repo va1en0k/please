@@ -5,6 +5,7 @@ import sys
 from pyplease.colors import colored
 from pyplease import utils, files, validators
 
+#from pyplease.interaction import console as backend
 
 MOODS = {'question': '???',
          'success': ':-)',
@@ -27,7 +28,7 @@ def ask(text, default=None, variants=None, validate=None, tries=3):
     default - if not None, the default value, used if answer is blank
     variants - a list of variants (don't use with validate) (deprecated!)
     validate - a validation object (see pyplease.interaction.validate)
-               or a function (str -> bool)
+    or a function (str -> bool)
     tries - a number of tries (if validate is not None)
 
     {text} ({variant1/variant2/...}) [{default}] """
@@ -36,10 +37,10 @@ def ask(text, default=None, variants=None, validate=None, tries=3):
     
     if variants:
         variants_prompt = ' (%s)' % ('/'.join(variants))
-                
+        
         validate = validators.variants(variants)
         
-                
+        
     if default:
         default_prompt = ' [%s]' % default
 
@@ -48,7 +49,7 @@ def ask(text, default=None, variants=None, validate=None, tries=3):
                 text=text,
                 default_prompt=default_prompt,
                 variants_prompt=variants_prompt)
-            
+    
     value = raw_input(pt)
 
     if default is not None and not value:
@@ -70,9 +71,9 @@ def ask(text, default=None, variants=None, validate=None, tries=3):
                        default=default,
                        validate=validate,
                        tries=tries - 1)
-                
-        raise ValueError('Invalid input!')
         
+        raise ValueError('Invalid input!')
+    
     return value
 
 def confirm(text):
