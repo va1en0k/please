@@ -4,6 +4,8 @@
 
 I'm going to write a blog post about it. Please stay tuned at <http://unfoldthat.com/>
 
+![please github](http://dl.dropbox.com/u/96578/scrshots/github_create.png)
+
 ![please usage](http://dl.dropbox.com/u/96578/scrshots/please_usage.png)
 
 ## Install
