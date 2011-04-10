@@ -9,11 +9,11 @@ class Module(modules.Module):
 
     @modules.action('[module_name]', 'adds/edits a module for Please')
     def add(self, values):
+        config = self.get_config()
+        
         module_name = self.get_module_name(values)
         
         self.extra_params(values[1:])
-
-        config = self.get_config()
             
         try:
             path = config.get('modules', module_name)
@@ -28,12 +28,12 @@ class Module(modules.Module):
 
     @modules.action('[module_name]', 'removes a module from Please')
     def remove(self, values):
+        config = self.get_config()
+        
         module_name = self.get_module_name(values)
 
         self.extra_params(values[1:])
-
-        config = self.get_config()
-            
+    
         try:
             path = config.get('modules', module_name)
         except Exception:

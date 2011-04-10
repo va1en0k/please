@@ -3,18 +3,14 @@ import subprocess
 
 from pyplease import modules
 
-def check_output(args):
-    try:
-        # 2.7
-        return subprocess.check_output(args)
-    except AttributeError:
-        pass
+def git_option_query(option):
+    return modules.check_output(['git', 'config', option])
 
-    p = subprocess.Popen(args, stdout=subprocess.PIPE)
+def git_option_set(option, value):
+    subprocess.call(['git', 'config', '--global', option, value])
 
-    ret = p.communicate()[0]
-
-    return ret.rstrip()
+def git_option_unset(option):
+    subprocess.call(['git', 'config', '--global', '--unset', option])
 
 class Module(modules.Module):
     """Git configurator
@@ -59,7 +55,7 @@ class Module(modules.Module):
 
 
     def query(self, name):
-        return check_output(['git', 'config', name])
+        return git_option_query(name)
 
     def set(self, name, value):
-        subprocess.call(['git', 'config', name, value])
+        return git_option_set(name, value)

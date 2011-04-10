@@ -1,6 +1,7 @@
 import sys
 import shutil
 import os
+import subprocess
 
 import pyplease
 
@@ -52,6 +53,19 @@ def validator(message):
         return func
     
     return _decorator
+
+def check_output(args):
+    try:
+        # 2.7
+        return subprocess.check_output(args)
+    except AttributeError:
+        pass
+
+    p = subprocess.Popen(args, stdout=subprocess.PIPE)
+
+    ret = p.communicate()[0]
+
+    return ret.rstrip()
 
 
 class Module(object):    

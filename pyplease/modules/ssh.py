@@ -48,6 +48,7 @@ class Module(modules.Module):
         return self.success('Now try login here using a private key from the pair')
 
 
+    
 
     def prepare_folder(self):
         ssh = self.normalize_path('~/.ssh')
