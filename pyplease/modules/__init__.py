@@ -7,8 +7,9 @@ import pyplease
 
 from pyplease.config import CONFIG
 
-DEFAULTS = [('git', 'pyplease.modules.git'),
-            ('ssh', 'pyplease.modules.ssh')]
+DEFAULTS = [('ssh', 'pyplease.modules.ssh'),
+            ('git', 'pyplease.modules.git'),
+            ('github', 'pyplease.modules.github')]
 
 try:
     MODULES = dict(CONFIG.items('modules'))
