@@ -77,7 +77,7 @@ class Module(modules.Module):
                 self.success('Registered "%s"' % module_name)
 
     @modules.action
-    def disable_autocomplete(self):
+    def autocomplete_disable(self):
         
         bashrc = self.ask_path('Path to the bashrc file?', '~/.bashrc')
 
